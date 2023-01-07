@@ -1,34 +1,58 @@
 import face_recognition
 import cv2
 import numpy as np
+import sqlite3
 
+def stringToLowercase(name):
+    nameStr = "".join(name.split(' '))
+    return nameStr.lower()
+
+def writeTofile(data, filename):
+    # Convert binary data to proper format and write it on Hard Disk
+    with open(filename, 'wb') as file:
+        file.write(data)
+    print("Stored blob data into: ", filename, "\n")
+
+def readBlobData(fullname):
+    try:
+        sqliteConnection = sqlite3.connect('./face-recog', uri=True)
+        cursor = sqliteConnection.cursor()
+        print("Connected to SQLite")
+
+        sql_fetch_blob_query = """SELECT * from users where Fullname = ?"""
+        cursor.execute(sql_fetch_blob_query, (fullname,))
+        record = cursor.fetchall()
+        for row in record:
+            print("Name = ", row[0])
+            name = row[0]
+            photo = row[1]
+
+            print("Storing user image locally \n")
+            photoPath = "./" +  stringToLowercase(name) + ".jpg"
+            writeTofile(photo, photoPath)
+
+        cursor.close()
+
+    except sqlite3.Error as error:
+        print("Failed to read blob data from sqlite table: ", error)
+    finally:
+        if sqliteConnection:
+            sqliteConnection.close()
+            print("Sqlite connection is closed")
+
+userName = "Barack Obama"
+readBlobData(userName)
 
 # Load a sample picture and learn how to recognize it.
-obama_image = face_recognition.load_image_file(r"C:\Users\Natyra\Desktop\face-recognition-project\barackObama.jpg")
-obama_face_encoding = face_recognition.face_encodings(obama_image)[0]
-
-# Load a second sample picture and learn how to recognize it.
-elon_image = face_recognition.load_image_file(r"C:\Users\Natyra\Desktop\face-recognition-project\elonMusk.jpg")
-elon_face_encoding = face_recognition.face_encodings(elon_image)[0]
-
-woods_image = face_recognition.load_image_file(r"C:\Users\Natyra\Desktop\face-recognition-project\tigerWoods.jpeg")
-woods_face_encoding = face_recognition.face_encodings(woods_image)[0]
-
-nico_image = face_recognition.load_image_file(r"C:\Users\Natyra\Desktop\face-recognition-project\nicolainielsen.png")
-nico_face_encoding = face_recognition.face_encodings(nico_image)[0]
+user_image = face_recognition.load_image_file("./" +  stringToLowercase(userName) + ".jpg")
+user_face_encoding = face_recognition.face_encodings(user_image)[0]
 
 # Create arrays of known face encodings and their names
 known_face_encodings = [
-    obama_face_encoding,
-    elon_face_encoding,
-    woods_face_encoding,
-    nico_face_encoding
+    user_face_encoding,
 ]
 known_face_names = [
-    "Barack Obama",
-    "Elon Musk",
-    "Tiger Woods",
-    "Nicolai Nielsen"
+    userName
 ]
 
 # Initialize some variables
