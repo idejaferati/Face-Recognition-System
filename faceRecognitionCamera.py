@@ -8,7 +8,7 @@ def stringToLowercase(name):
     return nameStr.lower()
 
 def writeTofile(data, filename):
-    # Convert binary data to proper format and write it on Hard Disk
+    # Konverto te dhenat binare ne formatin adekuat dhe shkruaji ne Hard Disk
     with open(filename, 'wb') as file:
         file.write(data)
     print("Stored blob data into: ", filename, "\n")
@@ -40,22 +40,22 @@ def readBlobData(fullname):
             sqliteConnection.close()
             print("Sqlite connection is closed")
 
-userName = "Barack Obama"
-readBlobData(userName)
+	users = ["Barack Obama", "Elon Musk"]
 
-# Load a sample picture and learn how to recognize it.
-user_image = face_recognition.load_image_file("./" +  stringToLowercase(userName) + ".jpg")
-user_face_encoding = face_recognition.face_encodings(user_image)[0]
 
-# Create arrays of known face encodings and their names
-known_face_encodings = [
-    user_face_encoding,
-]
-known_face_names = [
-    userName
-]
+# Krijimi i vargjeve me kodim te fytyrave te njohura dhe emrave perkates
+known_face_encodings = []
+known_face_names = []
 
-# Initialize some variables
+for user in users:
+    readBlobData(user)
+    # Ngarko një foto shembull dhe mëso se si ta njohësh atë.
+    user_image = face_recognition.load_image_file("./" +  stringToLowercase(user) + ".jpg")
+    user_face_encoding = face_recognition.face_encodings(user_image)[0]
+    known_face_encodings.append(user_face_encoding)
+    known_face_names.append(user)
+
+# Inicializimi i disa variablave
 face_locations = []
 face_encodings = []
 face_names = []
@@ -66,33 +66,33 @@ capture = cv2.VideoCapture(0)
 
 while True:
     
-    # Grab a single frame of video
+    # Marrja e nje frame-i (kornize) te vetme te videos
     ret, frame = capture.read()
 
-    # Resize frame of video to 1/4 size for faster face recognition processing
+    # Ndryshimi i permasave te videos ne 1/4 e permases, per procesim me te shpejte te njohjes se fytyres
     small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
 
-    # Convert the image from BGR color (which OpenCV uses) to RGB color (which face_recognition uses)
+    # Konvertimi i fotos nga ngjyra BGR (qe e perdod OpenCV) ne ngjyra RGB (qe i perdor face_recognition)
     rgb_small_frame = small_frame[:, :, ::-1]
 
-    # Only process every other frame of video to save time
+    # Perpunimi vetem i cdo frame-i (kornize) tjeter te videos per te kursyer kohe
     if process_this_frame:
-        # Find all the faces and face encodings in the current frame of video
+        # Gjetja e cdo fytyre dhe kodimi te fytyres ne kuadrin aktual te videos 
         face_locations = face_recognition.face_locations(rgb_small_frame)
         face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
 
         face_names = []
         for face_encoding in face_encodings:
-            # See if the face is a match for the known face(s)
+            # Shiko nese fytyra pershtatet me fytyrat e njohura
             matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
             name = "Unknown"
 
-            # # If a match was found in known_face_encodings, just use the first one.
-            # if True in matches:
+            # # Nese gjendet nje pershtatje ne known_face_encodings, perdor te paren.
+            # if True ne matches:
             #     first_match_index = matches.index(True)
             #     name = known_face_names[first_match_index]
 
-            # Or instead, use the known face with the smallest distance to the new face
+            # Perndryshe, perdor fytyren e njohur me distancen me te vogel nga fytyra e re
             face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
             best_match_index = np.argmin(face_distances)
             if matches[best_match_index]:
@@ -103,7 +103,7 @@ while True:
     process_this_frame = not process_this_frame
 
     
-    # Display the results
+    # Shfaq rezultatet
     for (top, right, bottom, left), name in zip(face_locations, face_names):
         # Scale back up face locations since the frame we detected in was scaled to 1/4 size
         top *= 4
@@ -111,19 +111,19 @@ while True:
         bottom *= 4
         left *= 4
 
-        # Draw a box around the face
+        # Vizato nje kuti rreth fytyres
         cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 0), 2)
 
-        # Draw a label with a name below the face
+        # Vizato nje label me emer poshte fytyres
         cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 255, 0), cv2.FILLED)
         font = cv2.FONT_HERSHEY_DUPLEX
         cv2.putText(frame, name, (left + 4, bottom - 4), font, 1, (0,0,255), 2)
 
 
-    # Display the resulting image
+    # Shfaq imazhin rezultues
     cv2.imshow('Image', frame)
 
-    # Hit 'q' on the keyboard to quit!
+    # Shtyp 'q' ne tastiere per te perfunduar!
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
