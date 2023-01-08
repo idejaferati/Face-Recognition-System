@@ -40,7 +40,7 @@ def readBlobData(fullname):
             sqliteConnection.close()
             print("Sqlite connection is closed")
 
-	users = ["Barack Obama", "Elon Musk"]
+users = ["Ideja Ferati", "Jeta Kajtazi", "Jete Lajqi"]
 
 
 # Krijimi i vargjeve me kodim te fytyrave te njohura dhe emrave perkates
@@ -49,7 +49,7 @@ known_face_names = []
 
 for user in users:
     readBlobData(user)
-    # Ngarko një foto shembull dhe mëso se si ta njohësh atë.
+    # Ngarkimi i fotos
     user_image = face_recognition.load_image_file("./" +  stringToLowercase(user) + ".jpg")
     user_face_encoding = face_recognition.face_encodings(user_image)[0]
     known_face_encodings.append(user_face_encoding)
@@ -75,9 +75,9 @@ while True:
     # Konvertimi i fotos nga ngjyra BGR (qe e perdod OpenCV) ne ngjyra RGB (qe i perdor face_recognition)
     rgb_small_frame = small_frame[:, :, ::-1]
 
-    # Perpunimi vetem i cdo frame-i (kornize) tjeter te videos per te kursyer kohe
+    # Perpunimi i cdo frame-i (kornize) tjeter te videos 
     if process_this_frame:
-        # Gjetja e cdo fytyre dhe kodimi te fytyres ne kuadrin aktual te videos 
+        # Gjetja e cdo fytyre ne kuadrin aktual te videos 
         face_locations = face_recognition.face_locations(rgb_small_frame)
         face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
 
@@ -127,6 +127,6 @@ while True:
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-# Release handle to the webcam
+# Ndalja e kameres
 capture.release()
 cv2.destroyAllWindows()
