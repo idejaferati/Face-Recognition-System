@@ -1,5 +1,9 @@
 import sqlite3
 
+def stringToLowercase(name):
+nameStr = "".join(name.split(' '))
+return nameStr.lower()
+
 def convertToBinaryData(filename):
     # Convert digital data to binary format
     with open(filename, 'rb') as file:
@@ -29,4 +33,7 @@ def insertBLOB(name, img):
             sqliteConnection.close()
             print("The sqlite connection is closed")
 
-insertBLOB("Barack Obama", r"C:\Users\Natyra\Desktop\face-recognition-project\barackObama.jpg")
+	
+users = ["Barack Obama", "Elon Musk"]
+for user in users:
+    insertBLOB(user, "./" +  stringToLowercase(user) + ".jpg")
