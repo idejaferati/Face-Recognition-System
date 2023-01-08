@@ -1,8 +1,8 @@
 import sqlite3
 
 def stringToLowercase(name):
-nameStr = "".join(name.split(' '))
-return nameStr.lower()
+    nameStr = "".join(name.split(' '))
+    return nameStr.lower()
 
 def convertToBinaryData(filename):
     # Konverto te dhenat digjitale ne formatin binar
